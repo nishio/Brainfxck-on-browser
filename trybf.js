@@ -25,6 +25,7 @@ $(function () {
 	function step () {
 		for (var i=pc ; i<prog.length ; i++) {
 			if ("+-<>[],.".indexOf(prog[i]) != -1) {
+				if (interval !== 0) select(i, i+1, code[0]);
 				switch (prog[i]) {
 					case "+":
 						memory.inc();
