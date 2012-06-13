@@ -11,6 +11,7 @@
 			this.clear();
 		},
 		clear : function () {
+			idx = 0;
 			for (var i=0 ; i<256 ; i++) {
 				memory[i] = 0;
 				$("#mem" + i).html("000");

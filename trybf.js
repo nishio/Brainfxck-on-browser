@@ -3,17 +3,22 @@ $(function () {
 	    action = $("#run"),
 	    output = $("#output");
 	
-	var loop, prog, pc;
+	var prog, pc, interval;
 	
 	function run (e) {
 		e.preventDefault();
 		action.html("Stop").one("click", stop);
-		var interval = Number($("#interval").val()) * 1000 || 300;
+		interval = Number($("#interval").val()) * 1000;
+		console.log(interval);
 		memory.clear();
 		pc = 0;
-		loop = setInterval(step, interval);
 		prog = code.val();
 		output.html("");
+		if (interval==0) {
+			step();
+		} else {
+			setTimeout(step, interval);
+		}
 		return false;
 	}
 	
@@ -61,14 +66,20 @@ $(function () {
 				break;
 			}
 		}
+		
 		if (i==prog.length) {
 			stop();
+		} else {
+			if (interval==0) {
+				step();
+			} else {
+				setTimeout(step, interval);
+			}
 		}
 	}
 	
 	function stop () {
 		action.html("Run").one("click", run);
-		clearInterval(loop);
 	}
 	
 	action.one("click", run);
