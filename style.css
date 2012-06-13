@@ -1,0 +1,17 @@
+#bf {
+	position : relative;
+	top : 25px;
+}
+
+#mem {
+	font : 12px sans-serif;
+	padding : 5px;
+}
+
+#mem > span {
+	margin-right : 4px;
+}
+
+#mem > .active {
+	color : red;
+}
