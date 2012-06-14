@@ -1,32 +1,71 @@
 $(function () {
-	var code   = $("#code"),
-	    action = $("#run"),
-	    output = $("#output");
+	var INTERVAL = 1000 / 20;
 	
-	var prog, pc, interval;
+	//Edit mode
+	$("#edit-mode > #run").click(function () {
+		$("#edit-mode").hide();
+		$("#run-mode").show();
+		init();
+		run();
+	});
 	
-	function run (e) {
-		e.preventDefault();
-		action.html("Stop").one("click", stop);
-		interval = Number($("#interval").val()) * 1000;
-		console.log(interval);
+	var runId;
+	function run () {
+			try {
+				step();
+			} catch (e) {
+				return;
+			}
+			runId = setTimeout(run, INTERVAL);
+	};
+	
+	
+	$("#edit-mode > #debug").click(function () {
+		$("#edit-mode").hide();
+		$("#debug-mode").show();
+		init();
+	});
+	
+	
+	//Run mode
+	$("#run-mode > #stop").click(function () {
+		$("#run-mode").hide();
+		$("#edit-mode").show();
+		clearTimeout(runId);
+	});
+	
+	
+	//Debug mode
+	$("#debug-mode > #stop").click(function () {
+		$("#debug-mode").hide();
+		$("#edit-mode").show();
+	});
+	
+	$("#debug-mode > #step").click(step);
+	$("#debug-mode > #stepto").click(stepto);
+	
+	
+	//Common code
+	var code, pc;
+	
+	var output = $("#output");
+	
+	function init () {
+		code = $("#code").val();
+		output.html("");
 		memory.clear();
 		pc = 0;
-		prog = code.val();
-		output.html("");
-		if (interval==0) {
-			step();
-		} else {
-			setTimeout(step, interval);
-		}
-		return false;
+	}
+	
+	function stepto () {
+	
 	}
 	
 	function step () {
-		for (var i=pc ; i<prog.length ; i++) {
-			if ("+-<>[],.".indexOf(prog[i]) != -1) {
-				if (interval !== 0) select(i, i+1, code[0]);
-				switch (prog[i]) {
+		for (var i=pc ; i<code.length ; i++) {
+			if ("+-<>[],.".indexOf(code[i]) != -1) {
+				select(i, i+1, $("#code")[0]);
+				switch (code[i]) {
 					case "+":
 						memory.inc();
 						break;
@@ -42,9 +81,9 @@ $(function () {
 					case "[":
 						if (!memory.get()) {
 							var level = 0;
-							for (; i<prog.length ; i++) {
-								if (prog[i] == "[") level++;
-								if (prog[i] == "]") level--
+							for (; i<code.length ; i++) {
+								if (code[i] == "[") level++;
+								if (code[i] == "]") level--
 								if (level == 0) break;
 							}	
 						}
@@ -53,8 +92,8 @@ $(function () {
 						if (memory.get()) {
 							var level = 0;
 							for (; i>0 ; i--) {
-								if (prog[i] == "[") level++;
-								if (prog[i] == "]") level--
+								if (code[i] == "[") level++;
+								if (code[i] == "]") level--
 								if (level == 0) break;
 							}	
 						}
@@ -67,22 +106,8 @@ $(function () {
 				break;
 			}
 		}
-		
-		if (i==prog.length) {
-			stop();
-		} else {
-			if (interval==0) {
-				step();
-			} else {
-				setTimeout(step, interval);
-			}
-		}
+		if (i == code.length) throw "End of program";
 	}
 	
-	function stop () {
-		action.html("Run").one("click", run);
-	}
-	
-	action.one("click", run);
 	memory.init();
 });

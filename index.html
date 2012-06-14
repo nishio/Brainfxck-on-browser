@@ -2,7 +2,8 @@
 
 <html>
 	<head>
-		<link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+		<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<link href="bootstrap/js/bootstrap.min.js" rel="stylesheet">
 		<link href="style.css" rel="stylesheet">
 		<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 		<!--[if lt IE 9]>
@@ -20,10 +21,33 @@
 				<div class="span6">
 					<h4>Program</h4>
 					<textarea id="code" class="span6" style="height:300px;"></textarea>
-					<form class="form-inline" action="#">
-						<input id="interval" placeholder="Interval beetween instructions" type="number">
-						<button id="run" class="btn">Run</button>
-					</form>
+					
+					<div class="btn-group" id="edit-mode">
+						<button id="run" class="btn" title="Run program">
+							<i class="icon-play"></i>
+						</button>
+						<button id="debug" class="btn" title="Start debugging">
+							<i class="icon-asterisk"></i>
+						</button>
+					</div>
+					
+					<div class="btn-group" id="run-mode" hidden>
+						<button id="stop" class="btn" title="Stop program running">
+								<i class="icon-stop"></i>
+						</button>
+					</div>
+					
+					<div class="btn-group" id="debug-mode" hidden>
+						<button id="stop" class="btn" title="Stop debugging">
+							<i class="icon-stop"></i>
+						</button>
+						<button id="step" class="btn" title="Go to next instruction">
+							<i class="icon-step-forward"></i>
+						</button>
+						<button id="stepto" class="btn" title="Go to next '!'">
+							<i class="icon-fast-forward"></i>
+						</button>
+					</div>
 				</div>
 				
 				<div class="span6">
