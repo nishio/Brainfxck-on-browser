@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+		<link href="style.css" rel="stylesheet">
+		<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+		<!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<script src="./jquery.js"></script>
+		<script src="./trybf-utils.js"></script>
+		<script src="./trybf-memory.js"></script>
+		<script src="./trybf.js"></script>
+	</head>
+	
+	<body>
+		<div class="container-fluid" id="bf">
+			<div id="edit" class="row">
+				<div class="span6">
+					<h4>Program</h4>
+					<textarea id="code" class="span6" style="height:300px;"></textarea>
+					<form class="form-inline" action="#">
+						<input id="interval" placeholder="Interval beetween instructions" type="number">
+						<button id="run" class="btn">Run</button>
+					</form>
+				</div>
+				
+				<div class="span6">
+					<h4>Memory</h4>
+					<pre id="mem"></pre>
+					<h4>IO</h4>
+					<pre id="output"></pre>
+				</div>
+			</div> 
+		</div>
+	</body>
+</html>
