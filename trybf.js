@@ -6,17 +6,18 @@ $(function () {
 		$("#edit-mode").hide();
 		$("#run-mode").show();
 		init();
-		run();
+		run(false);
 	});
 	
 	var runId;
-	function run () {
-			try {
-				step();
-			} catch (e) {
-				return;
-			}
-			runId = setTimeout(run, INTERVAL);
+	function run (end) {
+		if (end) {
+			$("#run-mode > #stop").click();
+		} else {
+			runId = setTimeout(function () {
+				step(run);
+			}, INTERVAL);
+		}
 	};
 	
 	
@@ -41,8 +42,14 @@ $(function () {
 		$("#edit-mode").show();
 	});
 	
-	$("#debug-mode > #step").click(step);
-	$("#debug-mode > #stepto").click(stepto);
+	$("#debug-mode > #step").click(function () {
+		$("#debug-mode").attr("disabled", "");
+		step(function (end) {
+			$("#debug-mode > *").removeAttr("disabled");
+		});
+	});
+	
+	$("#debug-mode > #stepto").click(stepToBreakpoint);
 	
 	
 	//Common code
@@ -57,14 +64,27 @@ $(function () {
 		pc = 0;
 	}
 	
-	function stepto () {
-	
+	function stepToBreakpoint () {
+		function doStepToBreakpoint () {
+			var idx = code.indexOf("(breakpoint)", pc);
+			if (pc < idx) {
+				step(function () {
+					setTimeout(doStepToBreakpoint, INTERVAL);
+				});
+			} else {
+				pc = idx + "(breakpoint)".length;
+				$("#code").select(idx, pc);
+			}
+		}
+		doStepToBreakpoint();
 	}
 	
-	function step () {
+	
+	
+	function step (next) {
 		for (var i=pc ; i<code.length ; i++) {
 			if ("+-<>[],.".indexOf(code[i]) != -1) {
-				select(i, i+1, $("#code")[0]);
+				$("#code").select(i, i+1);
 				switch (code[i]) {
 					case "+":
 						memory.inc();
@@ -101,12 +121,24 @@ $(function () {
 					case ".":
 						output.html(output.html()+String.fromCharCode(memory.get()))
 						break;
+					case ",":
+						$("#code").blur();
+						$(document).one("keyup", function (e) {
+							$("#code").focus();
+							memory.set(e.keyCode);
+							pc = i + 1;
+							next(pc >= code.length);
+							return false;
+						});
+						return;
+						break;
 				}
 				pc = i+1;
 				break;
 			}
 		}
-		if (i == code.length) throw "End of program";
+		
+		next(pc >= code.length);
 	}
 	
 	memory.init();

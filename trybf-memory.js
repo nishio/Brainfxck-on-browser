@@ -11,6 +11,7 @@
 			this.clear();
 		},
 		clear : function () {
+			$("#mem"+idx).removeClass("active");
 			idx = 0;
 			for (var i=0 ; i<256 ; i++) {
 				memory[i] = 0;
