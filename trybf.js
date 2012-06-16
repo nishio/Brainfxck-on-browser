@@ -1,12 +1,39 @@
 $(function () {
 	var INTERVAL = 1000 / 20;
+	var stop = true;
 	
-	//Edit mode
-	$("#edit-mode > #run").click(function () {
+	function ignoreEvent (e) {
+		e.preventDefault();
+		return false;
+	}
+	
+	function initInterpeter () {
+		stop = false;
 		$("#edit-mode").hide();
+		
+		code = $("#code").val();
+		output.html("");
+		memory.clear();
+		pc = 0;
+		$("#code")
+			.on("keydown", ignoreEvent)
+			.on("keypress", ignoreEvent);
+	}
+	
+	function stopInterpreter () {
+		$("#edit-mode").show();
+		stop = true;
+		clearTimeout(runId);
+		$("#code")
+			.off("keydown", ignoreEvent)
+			.off("keypress", ignoreEvent);
+	}
+	
+	//Run mode
+	$("#edit-mode > #run").click(function () {
+		initInterpeter();
 		$("#run-mode").show();
-		init();
-		run(false);
+		step(run);
 	});
 	
 	var runId;
@@ -19,51 +46,31 @@ $(function () {
 			}, INTERVAL);
 		}
 	};
-	
-	
-	$("#edit-mode > #debug").click(function () {
-		$("#edit-mode").hide();
-		$("#debug-mode").show();
-		init();
-	});
-	
-	
-	//Run mode
+		
 	$("#run-mode > #stop").click(function () {
 		$("#run-mode").hide();
-		$("#edit-mode").show();
-		clearTimeout(runId);
+		stopInterpreter();
 	});
 	
 	
 	//Debug mode
+	
+	$("#edit-mode > #debug").click(function () {
+		initInterpeter();
+		$("#debug-mode").show();
+	});
+	
 	$("#debug-mode > #stop").click(function () {
 		$("#debug-mode").hide();
-		$("#edit-mode").show();
+		stopInterpreter();
 	});
 	
 	$("#debug-mode > #step").click(function () {
-		$("#debug-mode").attr("disabled", "");
-		step(function (end) {
-			$("#debug-mode > *").removeAttr("disabled");
-		});
+		step(function () {});
 	});
 	
 	$("#debug-mode > #stepto").click(stepToBreakpoint);
-	
-	
-	//Common code
-	var code, pc;
-	
-	var output = $("#output");
-	
-	function init () {
-		code = $("#code").val();
-		output.html("");
-		memory.clear();
-		pc = 0;
-	}
-	
+		
 	function stepToBreakpoint () {
 		function doStepToBreakpoint () {
 			var idx = code.indexOf("(breakpoint)", pc);
@@ -73,18 +80,21 @@ $(function () {
 				});
 			} else {
 				pc = idx + "(breakpoint)".length;
-				$("#code").select(idx, pc);
+				$("#code").highlight(idx, pc);
 			}
 		}
 		doStepToBreakpoint();
 	}
 	
+	//Common code
+	var code, pc;
 	
-	
+	var output = $("#output");
+		
 	function step (next) {
 		for (var i=pc ; i<code.length ; i++) {
 			if ("+-<>[],.".indexOf(code[i]) != -1) {
-				$("#code").select(i, i+1);
+				$("#code").highlight(i, i+1);
 				switch (code[i]) {
 					case "+":
 						memory.inc();
@@ -127,7 +137,7 @@ $(function () {
 							$("#code").focus();
 							memory.set(e.keyCode);
 							pc = i + 1;
-							next(pc >= code.length);
+							next(pc >= code.length || stop);
 							return false;
 						});
 						return;
@@ -138,7 +148,7 @@ $(function () {
 			}
 		}
 		
-		next(pc >= code.length);
+		next(pc >= code.length || stop);
 	}
 	
 	memory.init();
