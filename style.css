@@ -1,6 +1,10 @@
 #bf {
 	position : relative;
-	top : 25px;
+	top : 50px;
+}
+
+#code {
+	font-family: Courier, sans-serif;
 }
 
 #mem {
@@ -14,4 +18,12 @@
 
 #mem > .active {
 	color : red;
+}
+
+#edit-mode, #run-mode, #debug-mode {
+	margin-left : 0px;
+}
+
+#readme {
+	margin-right: 5px;
 }
