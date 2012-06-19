@@ -1,0 +1,29 @@
+#bf {
+	position : relative;
+	top : 50px;
+}
+
+#code {
+	font-family: Courier, sans-serif;
+}
+
+#mem {
+	font : 12px sans-serif;
+	padding : 5px;
+}
+
+#mem > span {
+	margin-right : 4px;
+}
+
+#mem > .active {
+	color : red;
+}
+
+#edit-mode, #run-mode, #debug-mode {
+	margin-left : 0px;
+}
+
+#readme {
+	margin-right: 5px;
+}
